@@ -10,7 +10,7 @@
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">顧客情報を入力してください</h2>
-        <form id="customer-form">
+        <form id="customer-form" action="add-confirm.html" method="GET">
             <div class="form-group">
                 <label for="companyName">会社名:</label>
                 <input type="text" class="form-control" id="companyName" name="companyName" required>
@@ -36,24 +36,11 @@
         document.getElementById('customer-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            fetch(config.apiUrl + '/add-customer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams([...formData])
-            }).then(response => response.json())
-              .then(data => {
-                if(data.success) {
-                    alert('顧客情報が正常に保存されました。');
-                    // フォームをリセット
-                    document.getElementById('customer-form').reset();
-                } else {
-                    alert('保存に失敗しました。');
-                }
-              })
-              .catch(error => console.error('Error:', error));
+            const queryParams = new URLSearchParams([...formData]).toString();
+            // 確認画面へ遷移（値はURLパラメータで渡す）
+            location.href = `add-confirm.html?${queryParams}`;
         });
+
     </script>
     <!-- BootstrapのJavaScriptの読み込み -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

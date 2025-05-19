@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>顧客詳細</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">顧客詳細</h1>
+    <form id="customer-form">
+        <table class="table table-bordered">
+            <tbody id="customer-detail-body">
+                <!-- ここに顧客の詳細を表示 -->
+            </tbody>
+        </table>
+    </form>
+    <button onclick="history.back()" class="btn btn-secondary">戻る</button>
+    <button class="btn btn-primary" onclick="updateCustomer()">保存</button>
+    <button id="delete-btn" class="btn btn-danger">削除</button>
+</div>
+
+  <script type="module">
+    import config from "../config.js";
+
+    // URLからidを取得
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+
+    if (!id) {
+      alert("顧客IDが指定されていません");
+      history.back();
+    }
+
+    // APIから顧客詳細を取得
+    fetch(`${config.apiUrl}/customers/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("顧客情報の取得に失敗しました");
+        return res.json();
+      })
+      .then((customer) => {
+        const tbody = document.getElementById("customer-detail-body");
+        // customerオブジェクトの全てのキーと値をテーブルの行として表示
+        for (const [key, value] of Object.entries(customer)) {
+          tbody.insertAdjacentHTML(
+            "beforeend",
+            `<tr>
+                <th>${key}</th>
+                <td>
+                    <input type="text" name="${key}" value="${value}" class="form-control">
+                </td>
+            </tr>`
+          );
+        }
+      })
+      .catch((err) => {
+        alert(err.message);
+        history.back();
+      });
+
+    // 更新ボタンの処理
+    window.updateCustomer = function () {
+      if (!confirm("変更を保存してよろしいですか？")) return;
+
+      const form = document.getElementById("customer-form");
+      const formData = new FormData(form);
+      const data = {};
+
+      for (const [key, value] of formData.entries()) {
+        data[key] = value;
+      }
+
+      fetch(`${config.apiUrl}/customers/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+        })
+        .then((res) => {
+            if (!res.ok) throw new Error("更新に失敗しました");
+            alert("顧客情報を更新しました");
+        })
+        .catch((err) => {
+            alert(err.message);
+      });
+    };
+
+
+    // 削除ボタンの処理
+    document.getElementById("delete-btn").addEventListener("click", () => {
+      if (confirm("削除していいですか？")) {
+        fetch(`${config.apiUrl}/customers/${id}`, {
+          method: "DELETE",
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("削除に失敗しました");
+            alert("削除しました");
+            location.href = "list.html";  // 削除成功後は一覧画面に戻る（必要に応じて変更してください）
+          })
+          .catch((err) => {
+            alert(err.message);
+          });
+      }
+    });
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
