@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 app.use(express.urlencoded({ extended: true }));
+const router = express.Router();
 
 const port = 4783;
 
@@ -9,13 +10,12 @@ app.use(cors());
 
 const { Pool } = require("pg");
 const pool = new Pool({
-  user: "user_4783", // PostgreSQLのユーザー名に置き換えてください
-  host: "postgres",
-  database: "crm_4783", // PostgreSQLのデータベース名に置き換えてください
-  password: "pass_4783", // PostgreSQLのパスワードに置き換えてください
+  user: "user_yuka_misawa", // PostgreSQLのユーザー名に置き換えてください
+  host: "localhost",
+  database: "db_yuka_misawa", // PostgreSQLのデータベース名に置き換えてください
+  password: "pass", // PostgreSQLのパスワードに置き換えてください
   port: 5432,
 });
-
 
 
 app.get("/customers", async (req, res) => {
@@ -104,6 +104,8 @@ app.delete("/customers/:id", async (req, res) => {
     res.status(500).json({ error: "サーバーエラー" });
   }
 });
+
+app.use("/api_yuka_misawa", router);
 
 app.use(express.static("public"));
 
