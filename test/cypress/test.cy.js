@@ -1,6 +1,6 @@
 describe('顧客情報入力フォームのテスト', () => {
   it('顧客情報を入力して送信し、成功メッセージを確認する', () => {
-    cy.visit('/nishi/customer/add.html'); // テスト対象のページにアクセス
+    cy.visit('/yuka_misawa/customer/add.html'); // テスト対象のページにアクセス
     cy.window().then((win) => {
       // windowのalertをスタブ化し、エイリアスを設定
       cy.stub(win, 'alert').as('alertStub');
